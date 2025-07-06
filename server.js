@@ -13,6 +13,7 @@ const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const categoryRoutes = require('./routes/categories');
 const userRoutes = require('./routes/users');
+const cartRoutes = require('./routes/cart');
 
 // Middleware
 app.use(cors());
@@ -62,6 +63,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/cart', cartRoutes);
 
 // Start server
 app.listen(PORT, async () => {
