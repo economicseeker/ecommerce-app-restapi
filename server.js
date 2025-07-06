@@ -9,6 +9,9 @@ const PORT = process.env.PORT || 3000;
 
 // Import routes
 const testRoutes = require('./routes/test');
+const authRoutes = require('./routes/auth');
+const productRoutes = require('./routes/products');
+const categoryRoutes = require('./routes/categories');
 
 // Middleware
 app.use(cors());
@@ -54,6 +57,9 @@ app.get('/db-test', async (req, res) => {
 
 // Use routes
 app.use('/api/test', testRoutes);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/products', productRoutes);
+app.use('/api/v1/categories', categoryRoutes);
 
 // Start server
 app.listen(PORT, async () => {

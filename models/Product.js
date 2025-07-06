@@ -1,6 +1,10 @@
 const { query } = require('../config/database');
 
 class Product {
+  // Static query method for direct database access
+  static async query(sql, params = []) {
+    return await query(sql, params);
+  }
   // Get all products with optional category filter
   static async getAll(categoryId = null, limit = 50, offset = 0) {
     let sql = `
@@ -53,7 +57,13 @@ class Product {
       [name, description, price, category_id, sku, stock_quantity, image_url]
     );
     
-    return result.rows[0];
+    // Convert price to number for consistent response
+    const product = result.rows[0];
+    if (product) {
+      product.price = parseFloat(product.price);
+    }
+    
+    return product;
   }
 
   // Update product
@@ -68,7 +78,13 @@ class Product {
       [name, description, price, category_id, sku, stock_quantity, image_url, id]
     );
     
-    return result.rows[0];
+    // Convert price to number for consistent response
+    const product = result.rows[0];
+    if (product) {
+      product.price = parseFloat(product.price);
+    }
+    
+    return product;
   }
 
   // Delete product (soft delete by setting is_active to false)
