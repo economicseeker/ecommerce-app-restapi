@@ -2,7 +2,7 @@
 
 ## Base URL
 ```
-http://localhost:3000/api
+http://localhost:3000/api/v1
 ```
 
 ## Authentication Endpoints
@@ -26,7 +26,25 @@ http://localhost:3000/api
     "country": "USA"
   }
   ```
-- **Response**: User data (without password)
+- **Response** (201):
+  ```json
+  {
+    "success": true,
+    "message": "User registered successfully",
+    "data": {
+      "user": {
+        "id": 1,
+        "username": "john_doe",
+        "email": "john@example.com",
+        "first_name": "John",
+        "last_name": "Doe",
+        "created_at": "2024-01-01T00:00:00.000Z"
+      },
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "expiresIn": "24h"
+    }
+  }
+  ```
 
 ### User Login
 - **POST** `/auth/login`
@@ -38,13 +56,61 @@ http://localhost:3000/api
     "password": "securepassword123"
   }
   ```
-- **Response**: JWT token and user data
+- **Response** (200):
+  ```json
+  {
+    "success": true,
+    "message": "Login successful",
+    "data": {
+      "user": {
+        "id": 1,
+        "username": "john_doe",
+        "email": "john@example.com",
+        "first_name": "John",
+        "last_name": "Doe",
+        "created_at": "2024-01-01T00:00:00.000Z"
+      },
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "expiresIn": "24h"
+    }
+  }
+  ```
 
 ### User Logout
 - **POST** `/auth/logout`
 - **Description**: Logout user (invalidate token)
 - **Headers**: `Authorization: Bearer <token>`
-- **Response**: Success message
+- **Response** (200):
+  ```json
+  {
+    "success": true,
+    "message": "Logout successful"
+  }
+  ```
+
+### Get Current User Info
+- **GET** `/auth/me`
+- **Description**: Get current user's information
+- **Headers**: `Authorization: Bearer <token>`
+- **Response** (200):
+  ```json
+  {
+    "success": true,
+    "data": {
+      "id": 1,
+      "username": "john_doe",
+      "email": "john@example.com",
+      "first_name": "John",
+      "last_name": "Doe",
+      "phone": "+1234567890",
+      "address": "123 Main St",
+      "city": "New York",
+      "state": "NY",
+      "zip_code": "10001",
+      "country": "USA"
+    }
+  }
+  ```
 
 ## User Management Endpoints
 
@@ -105,7 +171,23 @@ http://localhost:3000/api
 - **GET** `/categories`
 - **Description**: Get all product categories
 - **Query Parameters**: `parent_id` (for subcategories)
-- **Response**: List of categories
+- **Response** (200):
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "id": 1,
+        "name": "Electronics",
+        "description": "Electronic devices and accessories",
+        "parent_id": null,
+        "is_active": true,
+        "created_at": "2024-01-01T00:00:00.000Z",
+        "updated_at": "2024-01-01T00:00:00.000Z"
+      }
+    ]
+  }
+  ```
 
 ### Get Category by ID
 - **GET** `/categories/:id`
@@ -143,26 +225,68 @@ http://localhost:3000/api
 
 ### Get All Products
 - **GET** `/products`
-- **Description**: Get all products with filtering
+- **Description**: Get all products with filtering, search, and pagination
 - **Query Parameters**:
+  - `page`: Page number (default: 1)
+  - `limit`: Items per page (default: 10)
   - `category_id`: Filter by category
   - `search`: Search in name/description
   - `min_price`: Minimum price filter
   - `max_price`: Maximum price filter
-  - `page`: Page number for pagination
-  - `limit`: Items per page
-  - `sort`: Sort by (price_asc, price_desc, name_asc, name_desc, newest)
-- **Response**: Paginated list of products
+- **Response** (200):
+  ```json
+  {
+    "success": true,
+    "data": {
+      "products": [
+        {
+          "id": 1,
+          "name": "iPhone 15 Pro",
+          "description": "Latest iPhone with advanced features",
+          "price": "999.99",
+          "category_id": 1,
+          "sku": "IPHONE15PRO",
+          "stock_quantity": 50,
+          "image_url": "https://example.com/iphone15.jpg",
+          "is_active": true,
+          "created_at": "2024-01-01T00:00:00.000Z",
+          "updated_at": "2024-01-01T00:00:00.000Z"
+        }
+      ],
+      "pagination": {
+        "current_page": 1,
+        "total_pages": 10,
+        "total_items": 100,
+        "items_per_page": 10,
+        "has_next_page": true,
+        "has_prev_page": false
+      }
+    }
+  }
+  ```
 
 ### Get Product by ID
 - **GET** `/products/:id`
 - **Description**: Get specific product details
-- **Response**: Product data with category info
-
-### Get Product by SKU
-- **GET** `/products/sku/:sku`
-- **Description**: Get product by SKU
-- **Response**: Product data
+- **Response** (200):
+  ```json
+  {
+    "success": true,
+    "data": {
+      "id": 1,
+      "name": "iPhone 15 Pro",
+      "description": "Latest iPhone with advanced features",
+      "price": "999.99",
+      "category_id": 1,
+      "sku": "IPHONE15PRO",
+      "stock_quantity": 50,
+      "image_url": "https://example.com/iphone15.jpg",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    }
+  }
+  ```
 
 ### Create Product (Admin)
 - **POST** `/products`
@@ -180,7 +304,7 @@ http://localhost:3000/api
     "image_url": "https://example.com/iphone15.jpg"
   }
   ```
-- **Response**: Created product data
+- **Response** (201): Created product data
 
 ### Update Product (Admin)
 - **PUT** `/products/:id`
@@ -211,9 +335,37 @@ http://localhost:3000/api
 
 ### Get User Cart
 - **GET** `/cart`
-- **Description**: Get current user's cart
+- **Description**: Get current user's cart with items and totals
 - **Headers**: `Authorization: Bearer <token>`
-- **Response**: Cart with items and totals
+- **Response** (200):
+  ```json
+  {
+    "success": true,
+    "data": {
+      "id": 1,
+      "user_id": 1,
+      "items": [
+        {
+          "id": 1,
+          "product_id": 1,
+          "quantity": 2,
+          "price_at_time": "999.99",
+          "product": {
+            "id": 1,
+            "name": "iPhone 15 Pro",
+            "description": "Latest iPhone with advanced features",
+            "image_url": "https://example.com/iphone15.jpg",
+            "price": "999.99",
+            "stock_quantity": 50
+          }
+        }
+      ],
+      "total_items": 1,
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    }
+  }
+  ```
 
 ### Add Item to Cart
 - **POST** `/cart/items`
@@ -226,10 +378,23 @@ http://localhost:3000/api
     "quantity": 2
   }
   ```
-- **Response**: Updated cart data
+- **Response** (201):
+  ```json
+  {
+    "success": true,
+    "message": "Product added to cart successfully",
+    "data": {
+      "id": 1,
+      "cart_id": 1,
+      "product_id": 1,
+      "quantity": 2,
+      "price_at_time": "999.99"
+    }
+  }
+  ```
 
 ### Update Cart Item
-- **PUT** `/cart/items/:itemId`
+- **PUT** `/cart/items/:id`
 - **Description**: Update cart item quantity
 - **Headers**: `Authorization: Bearer <token>`
 - **Request Body**:
@@ -238,19 +403,31 @@ http://localhost:3000/api
     "quantity": 3
   }
   ```
-- **Response**: Updated cart data
+- **Response** (200): Updated cart data
 
 ### Remove Item from Cart
-- **DELETE** `/cart/items/:itemId`
+- **DELETE** `/cart/items/:id`
 - **Description**: Remove item from cart
 - **Headers**: `Authorization: Bearer <token>`
-- **Response**: Updated cart data
+- **Response** (200):
+  ```json
+  {
+    "success": true,
+    "message": "Item removed from cart successfully"
+  }
+  ```
 
 ### Clear Cart
 - **DELETE** `/cart`
 - **Description**: Clear all items from cart
 - **Headers**: `Authorization: Bearer <token>`
-- **Response**: Success message
+- **Response** (200):
+  ```json
+  {
+    "success": true,
+    "message": "Cart cleared successfully"
+  }
+  ```
 
 ## Order Endpoints
 
@@ -258,64 +435,107 @@ http://localhost:3000/api
 - **GET** `/orders`
 - **Description**: Get current user's order history
 - **Headers**: `Authorization: Bearer <token>`
-- **Query Parameters**: `page`, `limit`, `status`
-- **Response**: Paginated list of orders
+- **Query Parameters**: `page`, `limit`
+- **Response** (200):
+  ```json
+  {
+    "success": true,
+    "orders": [
+      {
+        "orderId": 1,
+        "orderTotal": "1999.98",
+        "orderStatus": "pending",
+        "items": [
+          {
+            "itemId": 1,
+            "productId": 1,
+            "productName": "iPhone 15 Pro",
+            "itemPrice": "999.99",
+            "quantity": 2
+          }
+        ]
+      }
+    ]
+  }
+  ```
 
 ### Get Order by ID
-- **GET** `/orders/:id`
-- **Description**: Get specific order details
+- **GET** `/orders/:orderId`
+- **Description**: Get specific order details for the authenticated user
 - **Headers**: `Authorization: Bearer <token>`
-- **Response**: Order data with items
-
-### Create Order (Checkout)
-- **POST** `/orders`
-- **Description**: Create new order from cart
-- **Headers**: `Authorization: Bearer <token>`
-- **Request Body**:
+- **Response** (200):
   ```json
   {
-    "shipping_address": "123 Main St, City, State 12345",
-    "billing_address": "123 Main St, City, State 12345",
-    "payment_method": "credit_card",
-    "notes": "Please deliver after 6 PM"
+    "success": true,
+    "order": {
+      "orderId": 1,
+      "orderTotal": "1999.98",
+      "orderStatus": "pending",
+      "items": [
+        {
+          "itemId": 1,
+          "productId": 1,
+          "productName": "iPhone 15 Pro",
+          "itemPrice": "999.99",
+          "quantity": 2
+        }
+      ]
+    }
   }
   ```
-- **Response**: Created order data
 
-### Update Order Status (Admin)
-- **PATCH** `/orders/:id/status`
-- **Description**: Update order status (admin only)
+## Checkout Process
+
+### Create Order from Cart
+- **POST** `/cart/{cartId}/checkout`
+- **Description**: Checkout the user's cart and create an order
 - **Headers**: `Authorization: Bearer <token>`
-- **Request Body**:
+- **Parameters**: `cartId` - The cart ID to checkout
+- **Response** (201):
   ```json
   {
-    "status": "shipped",
-    "tracking_number": "1Z999AA1234567890"
+    "message": "Order created successfully",
+    "orderId": 1
   }
   ```
-- **Response**: Updated order data
 
-### Get All Orders (Admin)
-- **GET** `/admin/orders`
-- **Description**: Get all orders (admin only)
-- **Headers**: `Authorization: Bearer <token>`
-- **Query Parameters**: `page`, `limit`, `status`, `user_id`
-- **Response**: Paginated list of orders
+## Additional Endpoints
 
-## Admin Endpoints
+### Welcome Message
+- **GET** `/`
+- **Description**: Welcome message and server status
+- **Response** (200):
+  ```json
+  {
+    "message": "Welcome to E-commerce REST API",
+    "status": "Server is running successfully!",
+    "timestamp": "2024-01-01T00:00:00.000Z"
+  }
+  ```
 
-### Dashboard Statistics
-- **GET** `/admin/dashboard`
-- **Description**: Get admin dashboard statistics
-- **Headers**: `Authorization: Bearer <token>`
-- **Response**: Sales, orders, users, products statistics
+### Health Check
+- **GET** `/health`
+- **Description**: Server health status
+- **Response** (200):
+  ```json
+  {
+    "status": "OK",
+    "message": "Server is healthy",
+    "timestamp": "2024-01-01T00:00:00.000Z"
+  }
+  ```
 
-### Product Analytics
-- **GET** `/admin/analytics/products`
-- **Description**: Get product sales analytics
-- **Headers**: `Authorization: Bearer <token>`
-- **Query Parameters**: `period` (daily, weekly, monthly, yearly)
-- **Response**: Product performance data
+### Database Test
+- **GET** `/db-test`
+- **Description**: Test database connection
+- **Response** (200):
+  ```json
+  {
+    "status": "OK",
+    "message": "Database connection successful",
+    "timestamp": "2024-01-01T00:00:00.000Z"
+  }
+  ```
 
 ## Error Responses
 
@@ -324,20 +544,19 @@ http://localhost:3000/api
 {
   "success": false,
   "message": "Error description",
-  "error": "Detailed error message",
-  "timestamp": "2024-01-01T00:00:00.000Z"
+  "error": "Detailed error message"
 }
 ```
 
 ### Common HTTP Status Codes
 - **200**: Success
 - **201**: Created
-- **400**: Bad Request
-- **401**: Unauthorized
-- **403**: Forbidden
-- **404**: Not Found
-- **409**: Conflict (e.g., duplicate email)
-- **422**: Validation Error
+- **400**: Bad Request - Invalid input data
+- **401**: Unauthorized - Missing or invalid token
+- **403**: Forbidden - Insufficient permissions
+- **404**: Not Found - Resource doesn't exist
+- **409**: Conflict - Duplicate data (email, username, SKU)
+- **422**: Validation Error - Invalid data format
 - **500**: Internal Server Error
 
 ## Authentication
@@ -349,7 +568,19 @@ Authorization: Bearer <jwt_token>
 
 ### Token Expiration
 - Access tokens expire after 24 hours
-- Refresh tokens expire after 7 days
+- Tokens contain user ID, username, email, and role
+
+### Token Payload
+```json
+{
+  "userId": 1,
+  "username": "john_doe",
+  "email": "john@example.com",
+  "role": "user",
+  "iat": 1640995200,
+  "exp": 1641081600
+}
+```
 
 ## Pagination
 
@@ -357,26 +588,86 @@ Authorization: Bearer <jwt_token>
 ```json
 {
   "success": true,
-  "data": [...],
-  "pagination": {
-    "page": 1,
-    "limit": 10,
-    "total": 100,
-    "pages": 10,
-    "hasNext": true,
-    "hasPrev": false
+  "data": {
+    "products": [...],
+    "pagination": {
+      "current_page": 1,
+      "total_pages": 10,
+      "total_items": 100,
+      "items_per_page": 10,
+      "has_next_page": true,
+      "has_prev_page": false
+    }
   }
 }
 ```
 
-## Rate Limiting
+## Request Validation
 
-- **Public endpoints**: 100 requests per hour
-- **Authenticated endpoints**: 1000 requests per hour
-- **Admin endpoints**: 5000 requests per hour
+### Required Fields
+- **User Registration**: username, email, password
+- **User Login**: email, password
+- **Product Creation**: name, price, category_id, sku, stock_quantity
+- **Cart Item**: product_id, quantity
+
+### Validation Rules
+- **Email**: Must be valid email format
+- **Password**: Minimum 6 characters
+- **Username**: 3-50 characters, alphanumeric
+- **Price**: Must be positive number
+- **Quantity**: Must be positive integer
+- **SKU**: Must be unique
 
 ## API Versioning
 
 Current version: `v1`
 - All endpoints are prefixed with `/api/v1/`
-- Version can be specified in headers: `Accept: application/vnd.api+json;version=1` 
+- Version can be specified in headers: `Accept: application/vnd.api+json;version=1`
+
+## Rate Limiting
+
+Currently not implemented, but recommended:
+- **Public endpoints**: 100 requests per hour
+- **Authenticated endpoints**: 1000 requests per hour
+- **Admin endpoints**: 5000 requests per hour
+
+## CORS
+
+Cross-Origin Resource Sharing is enabled for all origins:
+```javascript
+app.use(cors());
+```
+
+## Testing
+
+### Test Coverage
+- **Authentication**: Registration, login, logout
+- **User Management**: Profile operations
+- **Products**: CRUD operations, filtering, search
+- **Cart**: Add, update, remove items
+- **Orders**: View history and details
+- **Checkout**: Complete order process
+
+### Running Tests
+```bash
+npm test                    # Run all tests
+npm test -- --runInBand    # Run tests sequentially
+```
+
+## Database Schema
+
+### Core Tables
+- **users**: User accounts and profiles
+- **categories**: Product categories
+- **products**: Product catalog
+- **carts**: Shopping carts
+- **cart_items**: Items in shopping carts
+- **orders**: Customer orders
+- **order_items**: Items within orders
+
+### Key Features
+- **Soft Deletes**: Products and users marked as inactive
+- **Audit Trails**: created_at and updated_at timestamps
+- **Referential Integrity**: Foreign key constraints
+- **Indexes**: Optimized for common queries
+- **Triggers**: Automatic timestamp updates 

@@ -1,0 +1,443 @@
+openapi: 3.0.3
+info:
+  title: RESTful API e-Commerce App
+  version: 1.0.0
+  description: |
+    A comprehensive RESTful API for a full-featured e-commerce platform built with Node.js, Express, and PostgreSQL.
+    
+    ## Features
+    - **User Management**: Complete user registration, authentication, and profile management with JWT tokens
+    - **Product Catalog**: Browse, search, and filter products with pagination and category organization
+    - **Shopping Cart**: Add, update, remove items with real-time stock validation
+    - **Order Processing**: Complete checkout workflow with order history and tracking
+    - **Admin Operations**: Product and category management for administrators
+    
+    ## Technology Stack
+    - **Backend**: Node.js with Express.js framework
+    - **Database**: PostgreSQL with optimized schema and indexes
+    - **Authentication**: JWT (JSON Web Tokens) with bcrypt password hashing
+    - **Validation**: Express-validator for request validation
+    - **Testing**: Jest with Supertest for comprehensive API testing
+    - **Documentation**: OpenAPI 3.0.3 specification
+    
+    ## Security Features
+    - JWT-based authentication with 24-hour token expiration
+    - Password hashing using bcrypt with salt rounds
+    - Input validation and sanitization
+    - SQL injection protection through parameterized queries
+    - CORS enabled for cross-origin requests
+    - Role-based access control (User/Admin)
+    
+    ## Database Design
+    - Normalized schema with proper foreign key relationships
+    - Soft delete functionality for data integrity
+    - Audit trails with automatic timestamp management
+    - Optimized indexes for performance
+    - Triggers for maintaining data consistency
+    
+    ## API Features
+    - RESTful design principles
+    - Comprehensive error handling with standardized responses
+    - Pagination for large datasets
+    - Search and filtering capabilities
+    - Real-time stock validation
+    - Order status tracking
+    
+    ## Development & Testing
+    - Complete test suite covering all endpoints
+    - Environment-based configuration
+    - Health check and database connection monitoring
+    - Comprehensive logging and error tracking
+    
+    This API provides all the essential functionality needed for a modern e-commerce platform, from user registration to order fulfillment, with a focus on security, performance, and maintainability.
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+tags:
+  - name: Users
+    description: User registration, login, and profile management
+  - name: Products
+    description: Product browsing and details
+  - name: Cart
+    description: Shopping cart management
+  - name: Orders
+    description: Order history and details
+
+paths:
+  /api/users/register:
+    post:
+      tags: [Users]
+      summary: Register a new user
+      description: Register a new user account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, email, password]
+              properties:
+                username:
+                  type: string
+                  example: user
+                email:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: password123
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  userId:
+                    type: integer
+              examples:
+                  success:
+                    value:
+                      message: User registered
+                      userId: 1
+
+  /api/users/login:
+    post:
+      tags: [Users]
+      summary: Login a user
+      description: Login to an existing user account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: password123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+              examples:
+                success:
+                  value:
+                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '401':
+          description: Invalid credentials
+
+  /api/users/profile:
+    get:
+      tags: [Users]
+      summary: Get user profile
+      description: Get the profile of the currently authenticated user.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: integer }
+                  username: { type: string }
+                  email: { type: string }
+                  created_at: { type: string, format: date-time }
+                  updated_at: { type: string, format: date-time }
+              examples:
+                profile:
+                  value:
+                    id: 14
+                    username: testuser7
+                    email: testuser7@example.co.uk
+                    created_at: 2024-07-25T18:20:20.092Z
+                    updated_at: 2024-07-25T18:20:20.092Z
+        '401':
+          description: Unauthorized
+
+  /api/users/{userId}:
+    get:
+      tags: [Users]
+      summary: Get user by ID
+      description: Get user profile by user ID.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: User info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: integer }
+                  username: { type: string }
+                  email: { type: string }
+                  created_at: { type: string, format: date-time }
+                  updated_at: { type: string, format: date-time }
+    put:
+      tags: [Users]
+      summary: Update user information
+      description: Update user profile by user ID.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username: { type: string }
+                email: { type: string }
+      responses:
+        '200':
+          description: User info updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: integer }
+                  username: { type: string }
+                  email: { type: string }
+                  created_at: { type: string, format: date-time }
+                  updated_at: { type: string, format: date-time }
+
+  /api/products:
+    get:
+      tags: [Products]
+      summary: Get all products or filter by category
+      description: Retrieve all products or filter by category.
+      parameters:
+        - in: query
+          name: category
+          schema: { type: string }
+          description: Filter products by category ID
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+  /api/products/{productId}:
+    get:
+      tags: [Products]
+      summary: Get product by ID
+      description: Retrieve a product by its ID.
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Product info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  /api/cart:
+    get:
+      tags: [Cart]
+      summary: Get cart info
+      description: Get the current user's cart.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Cart info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+    post:
+      tags: [Cart]
+      summary: Add item to cart
+      description: Add an item to the user's cart.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [productId, quantity]
+              properties:
+                productId: { type: integer }
+                quantity: { type: integer }
+      responses:
+        '200':
+          description: Item added to cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItem'
+
+  /api/cart/items/{itemId}:
+    delete:
+      tags: [Cart]
+      summary: Delete item from cart
+      description: Delete an item from the user's cart.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Item deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItem'
+
+  /api/cart/{cartId}/checkout:
+    post:
+      tags: [Cart]
+      summary: Checkout cart
+      description: Checkout the user's cart and create an order.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  orderId: { type: integer }
+
+  /api/orders:
+    get:
+      tags: [Orders]
+      summary: Get all orders for user
+      description: Retrieve all past orders for the authenticated user.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+  /api/orders/{orderId}:
+    get:
+      tags: [Orders]
+      summary: Get order by ID
+      description: Retrieve a specific order by its ID for the authenticated user.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Product:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string }
+        price: { type: string }
+        stock: { type: integer }
+        category_id: { type: integer }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    Cart:
+      type: object
+      properties:
+        id: { type: integer }
+        user_id: { type: integer }
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+
+    CartItem:
+      type: object
+      properties:
+        id: { type: integer }
+        cart_id: { type: integer }
+        product_id: { type: integer }
+        quantity: { type: integer }
+
+    Order:
+      type: object
+      properties:
+        orderId: { type: integer }
+        orderTotal: { type: string }
+        orderStatus: { type: string }
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+
+    OrderItem:
+      type: object
+      properties:
+        itemId: { type: integer }
+        productId: { type: integer }
+        productName: { type: string }
+        itemPrice: { type: string }
+        quantity: { type: integer } 
