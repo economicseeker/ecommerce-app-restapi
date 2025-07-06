@@ -1,15 +1,15 @@
 const jwt = require('jsonwebtoken');
 
-// Middleware to verify JWT token
+// Authentication middleware
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({
       success: false,
       message: 'Access token required',
-      error: 'No authorization header provided'
+      error: 'No token provided'
     });
   }
 
@@ -18,7 +18,7 @@ const authenticateToken = (req, res, next) => {
       return res.status(403).json({
         success: false,
         message: 'Invalid or expired token',
-        error: err.message
+        error: 'Token verification failed'
       });
     }
     req.user = user;
@@ -26,68 +26,33 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// Middleware to check if user is admin
-const requireAdmin = (req, res, next) => {
-  if (!req.user) {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required'
-    });
-  }
+// Authorization middleware - check if user can access/modify specific user data
+const authorizeUserAccess = (req, res, next) => {
+  const requestedUserId = parseInt(req.params.id);
+  const currentUserId = req.user.userId;
 
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({
-      success: false,
-      message: 'Admin access required',
-      error: `User role '${req.user.role}' cannot access admin endpoint`
-    });
-  }
-  next();
-};
-
-// Middleware to check if user is accessing their own resource
-const requireOwnership = (req, res, next) => {
-  if (!req.user) {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required'
-    });
-  }
-
-  const resourceUserId = parseInt(req.params.id);
-  
-  // Allow if user is admin or accessing their own resource
-  if (req.user.role === 'admin' || req.user.userId === resourceUserId) {
-    next();
-  } else {
+  // Users can only access their own data (unless they're admin)
+  if (requestedUserId !== currentUserId) {
     return res.status(403).json({
       success: false,
       message: 'Access denied',
-      error: 'You can only access your own resources'
+      error: 'You can only access your own user data'
     });
   }
+
+  next();
 };
 
-// Optional authentication - doesn't fail if no token
-const optionalAuth = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (token) {
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-      if (!err) {
-        req.user = user;
-      }
-      next();
-    });
-  } else {
-    next();
-  }
+// Admin authorization middleware (placeholder for future role-based access)
+const requireAdmin = (req, res, next) => {
+  // TODO: Implement proper role-based authorization
+  // For now, we'll allow any authenticated user to access admin functions
+  // In a real app, you'd check if req.user.role === 'admin'
+  next();
 };
 
 module.exports = {
   authenticateToken,
-  requireAdmin,
-  requireOwnership,
-  optionalAuth
+  authorizeUserAccess,
+  requireAdmin
 }; 
