@@ -6,4 +6,44 @@
   border: 1px solid #eee;
   border-radius: 8px;
   background: #fff;
+}
+.checkout-list {
+  margin-bottom: 1.5rem;
+}
+.checkout-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+.checkout-item:last-child {
+  border-bottom: none;
+}
+.checkout-total {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: right;
+}
+.checkout-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background 0.2s;
+}
+.checkout-btn:hover {
+  background: #218838;
+}
+.checkout-message {
+  color: #388e3c;
+  font-size: 1rem;
+  text-align: center;
 } 
