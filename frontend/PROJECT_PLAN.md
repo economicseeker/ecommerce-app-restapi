@@ -25,22 +25,22 @@ This is the frontend part for a full-stack e-commerce application, built with Re
 - Error handling and loading states
 
 ## Timeline & Milestones
-1. **Project Planning & Setup** (Day 1)
+1. **Project Planning & Setup** 
    - Write project plan
    - Scaffold React app
-2. **Routing & Auth Pages** (Day 2)
+2. **Routing & Auth Pages** 
    - Set up React Router
    - Build registration and login pages
    - Integrate third-party login
    - Enable session support
-3. **Core E-Commerce Features** (Day 3-4)
+3. **Core E-Commerce Features** 
    - Product listing and details pages
    - Cart logic and UI
    - Checkout flow with Stripe
-4. **Protected Resources & Order History** (Day 5)
+4. **Protected Resources & Order History** 
    - Restrict access to protected routes
    - Build order history page
-5. **Polish & Deploy** (Day 6)
+5. **Polish & Deploy** 
    - Responsive design, error handling
    - Deploy to Render
 
