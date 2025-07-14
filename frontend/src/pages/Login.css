@@ -29,4 +29,18 @@
 }
 .login-container button:disabled {
   background: #aaa;
+}
+.error-message {
+  color: #d32f2f;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+.success-message {
+  color: #388e3c;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+.login-link {
+  margin-top: 16px;
+  text-align: center;
 } 
