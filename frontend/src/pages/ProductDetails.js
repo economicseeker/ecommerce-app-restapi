@@ -9,7 +9,7 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [cartMessage, setCartMessage] = useState("");
-  const { addToCart } = useCart();
+  const { addToCart, loading: cartLoading, error: cartError } = useCart();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -29,9 +29,10 @@ const ProductDetails = () => {
     fetchProduct();
   }, [productId]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
+    setCartMessage("");
     if (product) {
-      addToCart(product, 1);
+      await addToCart(product, 1);
       setCartMessage("Added to cart!");
     }
   };
@@ -48,8 +49,11 @@ const ProductDetails = () => {
       <h1>{product.name}</h1>
       <p>{product.description}</p>
       {product.price && <p><strong>Price:</strong> ${product.price}</p>}
-      <button className="add-to-cart-btn" onClick={handleAddToCart}>Add to Cart</button>
+      <button className="add-to-cart-btn" onClick={handleAddToCart} disabled={cartLoading}>
+        {cartLoading ? "Adding..." : "Add to Cart"}
+      </button>
       {cartMessage && <div className="cart-message">{cartMessage}</div>}
+      {cartError && <div className="error-message">{cartError}</div>}
     </div>
   );
 };

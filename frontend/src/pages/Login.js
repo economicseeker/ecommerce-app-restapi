@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [form, setForm] = useState({
-    identifier: "",
+    email: "",
     password: "",
   });
   const [errors, setErrors] = useState({});
@@ -16,7 +16,7 @@ const Login = () => {
 
   const validate = () => {
     const errs = {};
-    if (!form.identifier) errs.identifier = "Username or email is required";
+    if (!form.email) errs.email = "Email is required";
     if (!form.password) errs.password = "Password is required";
     return errs;
   };
@@ -41,7 +41,7 @@ const Login = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          identifier: form.identifier,
+          email: form.email,
           password: form.password,
         }),
       });
@@ -51,7 +51,7 @@ const Login = () => {
       } else {
         const data = await res.json();
         login(data.token, data.user); // expects { token, user }
-        setForm({ identifier: "", password: "" });
+        setForm({ email: "", password: "" });
         navigate("/");
       }
     } catch (err) {
@@ -66,15 +66,15 @@ const Login = () => {
       <h1>Login</h1>
       <form onSubmit={handleSubmit} noValidate>
         <div>
-          <label>Username or Email</label>
+          <label>Email</label>
           <input
-            type="text"
-            name="identifier"
-            value={form.identifier}
+            type="email"
+            name="email"
+            value={form.email}
             onChange={handleChange}
-            autoComplete="username"
+            autoComplete="email"
           />
-          {errors.identifier && <div className="error-message">{errors.identifier}</div>}
+          {errors.email && <div className="error-message">{errors.email}</div>}
         </div>
         <div>
           <label>Password</label>
