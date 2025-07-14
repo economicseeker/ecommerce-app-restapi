@@ -1,0 +1,15 @@
+/* Product Details Page Styles */
+.product-details-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fff;
+}
+.product-details-container img {
+  max-width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 4px;
+} 

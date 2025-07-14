@@ -1,0 +1,32 @@
+/* Register Page Styles */
+.register-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fafafa;
+}
+.register-container h1 {
+  margin-bottom: 1.5rem;
+}
+.register-container input {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+.register-container button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.register-container button:disabled {
+  background: #aaa;
+} 
