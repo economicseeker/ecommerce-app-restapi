@@ -1,0 +1,15 @@
+/* CartContext Styles */
+.cart-badge {
+  background: #007bff;
+  color: #fff;
+  border-radius: 50%;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+  font-weight: bold;
+}
+.cart-summary {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+} 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./ProductDetails.css";
+import { useCart } from "../context/CartContext";
 
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -8,6 +9,7 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [cartMessage, setCartMessage] = useState("");
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -27,22 +29,10 @@ const ProductDetails = () => {
     fetchProduct();
   }, [productId]);
 
-  const handleAddToCart = async () => {
-    setCartMessage("");
-    try {
-      const res = await fetch(`/api/v1/cart`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: product.id, quantity: 1 }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        setCartMessage(data.message || "Failed to add to cart");
-      } else {
-        setCartMessage("Added to cart!");
-      }
-    } catch (err) {
-      setCartMessage("Error adding to cart");
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product, 1);
+      setCartMessage("Added to cart!");
     }
   };
 
