@@ -7,6 +7,8 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    first_name: "",
+    last_name: "",
   });
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState("");
@@ -21,6 +23,8 @@ const Register = () => {
     if (!form.password) errs.password = "Password is required";
     else if (form.password.length < 6) errs.password = "Password must be at least 6 characters";
     if (form.password !== form.confirmPassword) errs.confirmPassword = "Passwords do not match";
+    if (!form.first_name) errs.first_name = "First name is required";
+    if (!form.last_name) errs.last_name = "Last name is required";
     return errs;
   };
 
@@ -49,6 +53,8 @@ const Register = () => {
           username: form.username,
           email: form.email,
           password: form.password,
+          first_name: form.first_name,
+          last_name: form.last_name,
         }),
       });
       if (!res.ok) {
@@ -56,7 +62,7 @@ const Register = () => {
         setApiError(data.message || "Registration failed");
       } else {
         setSuccess("Registration successful! You can now log in.");
-        setForm({ username: "", email: "", password: "", confirmPassword: "" });
+        setForm({ username: "", email: "", password: "", confirmPassword: "", first_name: "", last_name: "" });
       }
     } catch (err) {
       setApiError("Network error. Please try again.");
@@ -112,6 +118,28 @@ const Register = () => {
             autoComplete="new-password"
           />
           {errors.confirmPassword && <div style={{ color: "red" }}>{errors.confirmPassword}</div>}
+        </div>
+        <div>
+          <label>First Name</label>
+          <input
+            type="text"
+            name="first_name"
+            value={form.first_name}
+            onChange={handleChange}
+            autoComplete="given-name"
+          />
+          {errors.first_name && <div style={{ color: "red" }}>{errors.first_name}</div>}
+        </div>
+        <div>
+          <label>Last Name</label>
+          <input
+            type="text"
+            name="last_name"
+            value={form.last_name}
+            onChange={handleChange}
+            autoComplete="family-name"
+          />
+          {errors.last_name && <div style={{ color: "red" }}>{errors.last_name}</div>}
         </div>
         <button type="submit" disabled={loading}>
           {loading ? "Registering..." : "Register"}
