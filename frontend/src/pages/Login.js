@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./Login.css";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -9,7 +11,8 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const validate = () => {
     const errs = {};
@@ -22,7 +25,6 @@ const Login = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: undefined });
     setApiError("");
-    setSuccess("");
   };
 
   const handleSubmit = async (e) => {
@@ -34,7 +36,6 @@ const Login = () => {
     }
     setLoading(true);
     setApiError("");
-    setSuccess("");
     try {
       const res = await fetch("/api/v1/auth/login", {
         method: "POST",
@@ -48,9 +49,10 @@ const Login = () => {
         const data = await res.json();
         setApiError(data.message || "Login failed");
       } else {
-        setSuccess("Login successful!");
+        const data = await res.json();
+        login(data.token, data.user); // expects { token, user }
         setForm({ identifier: "", password: "" });
-        // TODO: handle session/token storage and redirect
+        navigate("/");
       }
     } catch (err) {
       setApiError("Network error. Please try again.");
@@ -89,7 +91,6 @@ const Login = () => {
           {loading ? "Logging in..." : "Login"}
         </button>
         {apiError && <div className="error-message" style={{ marginTop: 12 }}>{apiError}</div>}
-        {success && <div className="success-message" style={{ marginTop: 12 }}>{success}</div>}
       </form>
       <div className="login-link">
         Don't have an account? <a href="/register">Register</a>
