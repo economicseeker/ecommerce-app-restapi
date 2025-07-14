@@ -10,7 +10,17 @@
 .order-item {
   border-bottom: 1px solid #eee;
   padding: 1rem 0;
+  margin-bottom: 1rem;
 }
 .order-item:last-child {
   border-bottom: none;
+}
+.order-item ul {
+  margin: 0.5rem 0 0 1.5rem;
+  padding: 0;
+}
+.error-message {
+  color: #d32f2f;
+  font-size: 1rem;
+  margin-top: 1rem;
 } 
