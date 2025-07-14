@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./Register.css";
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -65,10 +66,10 @@ const Register = () => {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "2rem auto" }}>
+    <div className="register-container">
       <h1>Register</h1>
       <form onSubmit={handleSubmit} noValidate>
-        <div style={{ marginBottom: 12 }}>
+        <div>
           <label>Username</label>
           <input
             type="text"
@@ -76,11 +77,10 @@ const Register = () => {
             value={form.username}
             onChange={handleChange}
             autoComplete="username"
-            style={{ width: "100%" }}
           />
           {errors.username && <div style={{ color: "red" }}>{errors.username}</div>}
         </div>
-        <div style={{ marginBottom: 12 }}>
+        <div>
           <label>Email</label>
           <input
             type="email"
@@ -88,11 +88,10 @@ const Register = () => {
             value={form.email}
             onChange={handleChange}
             autoComplete="email"
-            style={{ width: "100%" }}
           />
           {errors.email && <div style={{ color: "red" }}>{errors.email}</div>}
         </div>
-        <div style={{ marginBottom: 12 }}>
+        <div>
           <label>Password</label>
           <input
             type="password"
@@ -100,11 +99,10 @@ const Register = () => {
             value={form.password}
             onChange={handleChange}
             autoComplete="new-password"
-            style={{ width: "100%" }}
           />
           {errors.password && <div style={{ color: "red" }}>{errors.password}</div>}
         </div>
-        <div style={{ marginBottom: 12 }}>
+        <div>
           <label>Confirm Password</label>
           <input
             type="password"
@@ -112,11 +110,10 @@ const Register = () => {
             value={form.confirmPassword}
             onChange={handleChange}
             autoComplete="new-password"
-            style={{ width: "100%" }}
           />
           {errors.confirmPassword && <div style={{ color: "red" }}>{errors.confirmPassword}</div>}
         </div>
-        <button type="submit" disabled={loading} style={{ width: "100%" }}>
+        <button type="submit" disabled={loading}>
           {loading ? "Registering..." : "Register"}
         </button>
         {apiError && <div style={{ color: "red", marginTop: 12 }}>{apiError}</div>}
